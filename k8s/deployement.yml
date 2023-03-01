@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: motd-api-deploy
+  labels:
+    app: motd-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: motd-api
+  template:
+    metadata:
+      labels:
+        app: motd-api
+        env: prod
+    spec:
+      containers:
+      - name: motd-api
+        image: nossblade/motd-api
+        env:
+           # Define the environment variable
+          - name: MESSAGE
+            valueFrom:
+               configMapKeyRef:
+                # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: config-motd-api
+                # Specify the key associated with the value
+                key: message
+          # Define the environment variable
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
+                name: config-motd-api
+                # Specify the key associated with the value
+                key: port
+        ports:
+        - containerPort: 5000
